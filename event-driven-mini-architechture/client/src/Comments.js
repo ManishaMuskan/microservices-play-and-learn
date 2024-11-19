@@ -14,7 +14,6 @@ const onSubmit = async (event) => {
 useEffect(() => {
     const fetchComments = async () => {
         const response = await axios.get(`http://localhost:4002/posts/${postId}/comments`);
-        console.log(postId, response.data);
         setComments(response.data);
     }
 
