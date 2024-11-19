@@ -33,6 +33,8 @@ app.post("/posts/:id/comments", async (req, res) => {
   });
   commentsByPostId[postId] = comments;
 
+  console.log(postId);
+
   await axios.post(`${eventBusBaseUrl}/events`, {
     event: "commentCreated",
     data: {

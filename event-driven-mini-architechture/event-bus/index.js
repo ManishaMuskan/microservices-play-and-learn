@@ -23,7 +23,7 @@ app.post("/events", (req, res) => {
 
   axios.post(`${basePostsServiceUrl}/events`, req.body);
   axios.post(`${baseCommentsServiceUrl}/events`, req.body);
-  // axios.post(baseQueryServiceUrl, req.body);
+  axios.post(`${baseQueryServiceUrl}/events`, req.body);
 
   res.status(200).json({ message: "event emitted", event });
 });

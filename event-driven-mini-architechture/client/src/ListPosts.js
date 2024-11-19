@@ -7,7 +7,7 @@ const ListPosts = ({ posts }) => {
       {posts.map((post) => (
         <div key={post.id} className='p-3 mx-1 border border-secondary'>
           <p>{post.title}</p>
-          <Comments postId={post.id}/>
+          <Comments postId={post.id} comments={post.comments} />
         </div>
       ))}
     </div>

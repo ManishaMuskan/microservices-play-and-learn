@@ -1,6 +1,5 @@
-import React, { useState } from "react";
 import axios from "axios";
-import Comments from "./Comments";
+import React, { useState } from "react";
 
 const Posts = () => {
   const [title, setTitle] = useState("");
