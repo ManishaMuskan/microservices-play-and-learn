@@ -28,33 +28,44 @@ app.post("/events", (req, res) => {
   const eventType = req.body.event;
 
   if (eventType === "postCreated") {
-    const postId = req.body.data.id;
     const postTitle = req.body.data.title;
+    const postId = req.body.data.id;
     const post = {
       id: postId,
       title: postTitle,
       comments: [],
     };
     posts.push(post);
-    console.log(posts);
   }
 
   if (eventType === "commentCreated") {
-    console.log(req.body);
-    const postId = req.body.data.postId;
-    const commentId = req.body.data.id;
-    const commentContent = req.body.data.content;
-
+    const { postId, id, status, content } = req.body.data;
     for (let post of posts) {
       if (post.id === postId) {
-        post.comments.push({ id: commentId, content: commentContent });
+        const comment = {
+          postId,
+          id,
+          status,
+          content,
+        };
+        post.comments.push(comment);
       }
     }
-
-    console.log(posts);
   }
 
-  // send response as it is a route handler
+  if (eventType === "commentUpdated") {
+    const { postId, id, status, content } = req.body.data;
+    console.log(posts, postId, id, status, content);
+
+    const associatedPost = posts.find((post) => post.id === postId);
+    let commentToBeModerated = associatedPost.comments.find(
+      (comment) => comment.id === id
+    );
+
+    commentToBeModerated.status = status;
+  }
+
+  // send response as it is a request handler
   res.send({});
 });
 
