@@ -40,3 +40,21 @@ MERN
 ### Reference
 
 https://www.udemy.com/course/microservices-with-node-js-and-react/learn/lecture/19098956#overview
+
+### Notes on Missing Events and Implementation:
+
+- **Issue with Missing Events**:
+  Events are not being synchronized properly. This could be due to issues in the current implementation.
+
+- **Reason for No Immediate Fix**:
+  Debugging and fixing are not prioritized because:
+
+  - This setup is intended only for conceptual learning about microservices communication.
+  - It is not designed for production-grade use.
+
+- **Tutorial Code Reference**:
+
+  - Tutorial code has been included for comparison and future reference.
+  - It can serve as a guide for refining or re-implementing the logic when needed.
+
+This setup is primarily for understanding, and a more robust solution should use tools like Kafka, RabbitMQ, or NATS for reliable communication.

@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const axios = require("axios");
 
 const app = express();
 
@@ -9,6 +10,44 @@ const posts = [];
 
 app.use(cors());
 app.use(bodyParser.json());
+
+const handleEvent = (eventType, data) => {
+  if (eventType === "postCreated") {
+    const { title, id } = data;
+    const post = {
+      id,
+      title,
+      comments: [],
+    };
+    posts.push(post);
+  }
+
+  if (eventType === "commentCreated") {
+    const { postId, id, status, content } = data;
+    for (let post of posts) {
+      if (post.id === postId) {
+        const comment = {
+          postId,
+          id,
+          status,
+          content,
+        };
+        post.comments.push(comment);
+      }
+    }
+  }
+
+  if (eventType === "commentUpdated") {
+    const { postId, id, status, content } = data;
+
+    const associatedPost = posts.find((post) => post.id === postId);
+    let commentToBeModerated = associatedPost.comments.find(
+      (comment) => comment.id === id
+    );
+
+    commentToBeModerated.status = status;
+  }
+};
 
 app.get("/", (req, res) => {
   res.send("Health check: OK");
@@ -27,48 +66,24 @@ app.get("/posts", (req, res) => {
 app.post("/events", (req, res) => {
   const eventType = req.body.event;
 
-  if (eventType === "postCreated") {
-    const postTitle = req.body.data.title;
-    const postId = req.body.data.id;
-    const post = {
-      id: postId,
-      title: postTitle,
-      comments: [],
-    };
-    posts.push(post);
-  }
-
-  if (eventType === "commentCreated") {
-    const { postId, id, status, content } = req.body.data;
-    for (let post of posts) {
-      if (post.id === postId) {
-        const comment = {
-          postId,
-          id,
-          status,
-          content,
-        };
-        post.comments.push(comment);
-      }
-    }
-  }
-
-  if (eventType === "commentUpdated") {
-    const { postId, id, status, content } = req.body.data;
-    console.log(posts, postId, id, status, content);
-
-    const associatedPost = posts.find((post) => post.id === postId);
-    let commentToBeModerated = associatedPost.comments.find(
-      (comment) => comment.id === id
-    );
-
-    commentToBeModerated.status = status;
-  }
+  handleEvent(eventType, req.body.data);
 
   // send response as it is a request handler
   res.send({});
 });
 
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`Query Service listening on port ${port}`);
+
+  try {
+    const res = await axios.get("http://localhost:4000/events");
+
+    for (let event of res.data) {
+      console.log("Processing event:", event.event);
+
+      handleEvent(event.event, event.data);
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
 });
